@@ -6,13 +6,13 @@ const API = "http://localhost:4000/api/user";
 
 export default function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login");        // "login" | "register" | "otp"
+  const [mode, setMode] = useState("login");  // login / register / otp
   const [form, setForm] = useState({ name: "", rollno: "", email: "", password: "" });
   const [otpValues, setOtpValues] = useState(["", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const [pendingEmail, setPendingEmail] = useState(""); // email waiting for OTP
+  const [pendingEmail, setPendingEmail] = useState("");  // email waiting for OTP
   const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 
   const handleChange = (e) => {
@@ -28,7 +28,6 @@ export default function AuthPage() {
     setSuccessMsg("");
   };
 
-  // ── OTP input handlers ─────────────────────────────────────────
   const handleOtpChange = (index, value) => {
     if (!/^\d*$/.test(value)) return; // digits only
     const newOtp = [...otpValues];
@@ -56,9 +55,9 @@ export default function AuthPage() {
     if (pasted.length > 0) otpRefs[Math.min(pasted.length, 4)].current.focus();
   };
 
-  // ── Login ──────────────────────────────────────────────────────
   const handleLogin = async () => {
-    setError(""); setLoading(true);
+    setError(""); 
+    setLoading(true);
     try {
       const res = await fetch(`${API}/login`, {
         method: "POST",
@@ -78,9 +77,9 @@ export default function AuthPage() {
     setLoading(false);
   };
 
-  // ── Register → sends OTP ───────────────────────────────────────
   const handleRegister = async () => {
-    setError(""); setLoading(true);
+    setError(""); 
+    setLoading(true);
     try {
       const res = await fetch(`${API}/register`, {
         method: "POST",
@@ -101,11 +100,14 @@ export default function AuthPage() {
     setLoading(false);
   };
 
-  // ── Verify OTP ─────────────────────────────────────────────────
   const handleVerifyOTP = async () => {
     const otp = otpValues.join("");
-    if (otp.length < 5) { setError("Please enter all 5 digits."); return; }
-    setError(""); setLoading(true);
+    if (otp.length < 5) {
+      setError("Please enter all 5 digits."); 
+      return; 
+    }
+    setError(""); 
+    setLoading(true);
     try {
       const res = await fetch(`${API}/verify-otp`, {
         method: "POST",
@@ -127,9 +129,9 @@ export default function AuthPage() {
     setLoading(false);
   };
 
-  // ── Resend OTP ─────────────────────────────────────────────────
   const handleResendOTP = async () => {
-    setError(""); setLoading(true);
+    setError(""); 
+    setLoading(true);
     try {
       const res = await fetch(`${API}/resend-otp`, {
         method: "POST",
