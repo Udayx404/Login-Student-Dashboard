@@ -11,10 +11,20 @@ console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "loaded" : "MISSING")
 const otpStore = {}  // {email: {otp, expiresAt, userData}}
 
 const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,           // true for 465, false for 587
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
+    }
+})
+
+transporter.verify((error, success) => {
+    if (error) {
+        console.log("Email transporter error:", error.message)
+    } else {
+        console.log("Email transporter ready")
     }
 })
 
