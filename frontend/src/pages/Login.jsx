@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const COLLEGE_NAME = "IIEST Shibpur";
-const API = "http://localhost:4000/api/user";
+const API = "http://localhost:4000/iiest/api/user";
 
 export default function AuthPage() {
   const navigate = useNavigate();

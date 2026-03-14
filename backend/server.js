@@ -49,14 +49,14 @@ const otpLimiter = rateLimit({
 })
 
 app.use(generalLimiter)
-app.use("/api/user/login", authLimiter)
-app.use("/api/user/register", authLimiter)
-app.use("/api/user/verify-otp", otpLimiter)
-app.use("/api/user/resend-otp", otpLimiter)
+app.use("/iiest/api/user/login", authLimiter)
+app.use("/iiest/api/user/register", authLimiter)
+app.use("/iiest/api/user/verify-otp", otpLimiter)
+app.use("/iiest/api/user/resend-otp", otpLimiter)
 
 connectDB()
 
-app.use("/api/user", userRouter)
+app.use("/iiest/api/user", userRouter)
 
 app.get("/", (req, res) => {
     res.send("API working")
