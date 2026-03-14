@@ -21,7 +21,7 @@ export default function Home() {
     return;
   }
   // Fetch real user data from backend
-  fetch("http://localhost:4000/iiest/api/user/me", {
+  fetch(`${import.meta.env.VITE_API_URL}/api/user/me`, {
     headers: { Authorization: `Bearer ${token}` }
   })
     .then(res => res.json())
