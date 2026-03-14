@@ -14,6 +14,7 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");  // email waiting for OTP
+  const [generatedOTP, setGeneratedOTP] = useState("")
   const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 
   const handleChange = (e) => {
@@ -82,21 +83,23 @@ export default function AuthPage() {
     setError(""); 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setPendingEmail(form.email);
-        setMode("otp");
-        setSuccessMsg(`OTP sent to ${form.email}`);
-      } else {
-        setError(data.message);
-      }
+        const res = await fetch(`${API}/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(form),
+        });
+        const data = await res.json();
+        console.log("Register response:", data)
+        if (data.success) {
+            setPendingEmail(form.email);
+            setGeneratedOTP(data.otp)  // save OTP
+            setMode("otp");
+            setSuccessMsg(`OTP generated successfully`);
+        } else {
+            setError(data.message);
+        }
     } catch {
-      setError("Cannot connect to server. Is the backend running?");
+        setError("Cannot connect to server. Is the backend running?");
     }
     setLoading(false);
   };
@@ -134,21 +137,22 @@ export default function AuthPage() {
     setError(""); 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/resend-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: pendingEmail }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setSuccessMsg("New OTP sent to your email!");
-        setOtpValues(["", "", "", "", ""]);
-        otpRefs[0].current.focus();
-      } else {
-        setError(data.message);
-      }
+        const res = await fetch(`${API}/resend-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: pendingEmail }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            setGeneratedOTP(data.otp)  // update displayed OTP
+            setSuccessMsg("New OTP generated!")
+            setOtpValues(["", "", "", "", ""])
+            otpRefs[0].current.focus()
+        } else {
+            setError(data.message);
+        }
     } catch {
-      setError("Cannot connect to server.");
+        setError("Cannot connect to server.");
     }
     setLoading(false);
   };
@@ -235,6 +239,28 @@ export default function AuthPage() {
                 <strong style={{ color: "#0288d1" }}>{pendingEmail}</strong>
               </p>
             </div>
+
+            {/* Show generated OTP on screen */}
+            {generatedOTP && (
+                <div style={{
+                    background: "#fff8e1",
+                    border: "1.5px dashed #f9a825",
+                    borderRadius: 10,
+                    padding: "14px 20px",
+                    marginBottom: 20,
+                    textAlign: "center",
+                }}>
+                    <p style={{ margin: "0 0 4px", fontSize: 11, color: "#f57f17", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                        Your OTP
+                    </p>
+                    <div style={{ fontSize: 32, fontWeight: 800, color: "#f57f17", letterSpacing: "0.3em" }}>
+                        {generatedOTP}
+                    </div>
+                    <p style={{ margin: "4px 0 0", fontSize: 11, color: "#aaa" }}>
+                        Enter this code in the boxes below
+                    </p>
+                </div>
+            )}
 
             {/* 5 OTP boxes */}
             <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 24 }}>
