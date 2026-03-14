@@ -318,14 +318,14 @@ export default function AuthPage() {
             </div>
 
             {!isLogin && (
-              <Field label="Full Name" name="name" type="text" placeholder="Enter your full name"
+              <Field label="Full Name" name="name" type="text" placeholder=""
                 value={form.name} onChange={handleChange} accent={accent} onSubmit={handleSubmit} />
             )}
-            <Field label="Roll Number" name="rollno" type="text" placeholder="e.g. 2024CSB***"
+            <Field label="Roll Number" name="rollno" type="text" placeholder=""
               value={form.rollno} onChange={handleChange} accent={accent} onSubmit={handleSubmit} />
-            <Field label="Email (gsuite)" name="email" type="email" placeholder="you@example.com"
+            <Field label="Email (gsuite)" name="email" type="email" placeholder=""
               value={form.email} onChange={handleChange} accent={accent} onSubmit={handleSubmit} />
-            <Field label="Password" name="password" type="password" placeholder="••••••••"
+            <Field label="Password" name="password" type="password" placeholder=""
               value={form.password} onChange={handleChange} accent={accent} onSubmit={handleSubmit} />
 
             {/* Error message */}
