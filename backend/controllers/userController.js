@@ -1,40 +1,22 @@
 import "../config/env.js"
-import userModel from "../models/userModel.js";
+import userModel from "../models/userModel.js"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import validator from "validator"
-import nodemailer from "nodemailer"
+import { Resend } from "resend"
 
-console.log("EMAIL_USER:", process.env.EMAIL_USER)
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "loaded" : "MISSING")
+const resend = new Resend(process.env.RESEND_API_KEY)
+const FROM = "onboarding@resend.dev"
 
-const otpStore = {}  // {email: {otp, expiresAt, userData}}
-
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,           // true for 465, false for 587
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    }
-})
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.log("Email transporter error:", error.message)
-    } else {
-        console.log("Email transporter ready")
-    }
-})
+const otpStore = {}  // { email: { otp, expiresAt, userData } }
 
 const generateOTP = () => {
     return Math.floor(10000 + Math.random() * 90000).toString()
 }
 
-const sendOTPEmail = async (toEmail, name, otp) => {  // sends OTP to given email address
-    const mailOptions = {
-        from: `"IIEST Shibpur OCR Portal" <${process.env.EMAIL_USER}>`,
+const sendOTPEmail = async (toEmail, name, otp) => {
+    await resend.emails.send({
+        from: FROM,
         to: toEmail,
         subject: "Your OTP for IIEST Shibpur OCR Portal Registration",
         html: `
@@ -63,13 +45,12 @@ const sendOTPEmail = async (toEmail, name, otp) => {  // sends OTP to given emai
                 </div>
             </div>
         `
-    }
-    await transporter.sendMail(mailOptions)
+    })
 }
 
-const sendWelcomeEmail = async (toEmail, name) => {  // sends message to given email address after registration
-    const mailOptions = {
-        from: `"IIEST Shibpur OCR Portal" <${process.env.EMAIL_USER}>`,
+const sendWelcomeEmail = async (toEmail, name) => {
+    await resend.emails.send({
+        from: FROM,
         to: toEmail,
         subject: "Welcome to IIEST Shibpur OCR Portal!",
         html: `
@@ -96,16 +77,15 @@ const sendWelcomeEmail = async (toEmail, name) => {  // sends message to given e
                 </div>
             </div>
         `
-    }
-    await transporter.sendMail(mailOptions)
+    })
 }
 
-const sendLoginAlertEmail = async (toEmail, name) => {  // sends message to given email address after login
+const sendLoginAlertEmail = async (toEmail, name) => {
     const time = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
-    const mailOptions = {
-        from: `"IIEST Shibpur OCR Portal" <${process.env.EMAIL_USER}>`,
+    await resend.emails.send({
+        from: FROM,
         to: toEmail,
-        subject: "New Login Detected - IIEST Shibpur OCR Portal",
+        subject: "Login Detected - IIEST Shibpur OCR Portal",
         html: `
             <div style="font-family: 'Trebuchet MS', sans-serif; max-width: 500px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
                 <div style="background: linear-gradient(135deg, #0277bd, #0288d1); padding: 28px; text-align: center;">
@@ -128,8 +108,7 @@ const sendLoginAlertEmail = async (toEmail, name) => {  // sends message to give
                 </div>
             </div>
         `
-    }
-    await transporter.sendMail(mailOptions)
+    })
 }
 
 const createToken = (id) => {
@@ -156,7 +135,7 @@ const registerUser = async (req, res) => {
         const otp = generateOTP()
         otpStore[email] = {
             otp,
-            expiresAt: Date.now() + 10 * 60 * 1000,  // OTP expires in 10 mins
+            expiresAt: Date.now() + 10 * 60 * 1000,
             userData: { name, rollno, email, password: hashedPassword }
         }
 
