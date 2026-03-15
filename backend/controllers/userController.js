@@ -103,9 +103,6 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const { email, password } = req.body
     try {
-        if (!validateRollNo(rollno)) {
-            return res.json({ success: false, message: "Invalid roll number format! Use: 20XXCSBXXX" })
-        }
         const emailExists = await userModel.findOne({ email })
         if (!emailExists) {
             return res.json({ success: false, message: "User doesn't exist! Please register." })
