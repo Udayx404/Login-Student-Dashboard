@@ -17,6 +17,11 @@ export default function AuthPage() {
   const [generatedOTP, setGeneratedOTP] = useState("")
   const otpRefs = [useRef(), useRef(), useRef(), useRef(), useRef()];
 
+  const validateRollNo = (rollno) => {
+    const pattern = /^20\d{2}CSB\d{3}$/
+    return pattern.test(rollno)
+  }
+
   const handleChange = (e) => {
     setError("");
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -58,7 +63,11 @@ export default function AuthPage() {
   };
 
   const handleLogin = async () => {
-    setError(""); 
+    setError("");
+    if (!validateRollNo(form.rollno)) {
+        setError("Roll number must be in format: 20XXCSBXXX (e.g. 2024CSB045)")
+        return
+    }
     setLoading(true);
     try {
       const res = await fetch(`${API}/login`, {
@@ -80,7 +89,11 @@ export default function AuthPage() {
   };
 
   const handleRegister = async () => {
-    setError(""); 
+    setError("");
+    if (!validateRollNo(form.rollno)) {
+        setError("Roll number must be in format: 20XXCSBXXX")
+        return
+    }
     setLoading(true);
     try {
         const res = await fetch(`${API}/register`, {

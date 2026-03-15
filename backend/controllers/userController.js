@@ -6,6 +6,11 @@ import validator from "validator"
 
 const otpStore = {}  // { email: { otp, expiresAt, userData } }
 
+const validateRollNo = (rollno) => {
+    const pattern = /^20\d{2}CSB\d{3}$/
+    return pattern.test(rollno)
+}
+
 const generateOTP = () => {
     return Math.floor(10000 + Math.random() * 90000).toString()
 }
@@ -63,6 +68,9 @@ const createToken = (id) => {
 const registerUser = async (req, res) => {
     const { name, rollno, password, email } = req.body
     try {
+        if (!validateRollNo(rollno)) {
+            return res.json({ success: false, message: "Invalid roll number format! Use: 20XXCSBXXX" })
+        }
         const emailExists = await userModel.findOne({ email })
         if (emailExists) {
             return res.json({ success: false, message: "User already exists! Please login." })
@@ -95,6 +103,9 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
     const { email, password } = req.body
     try {
+        if (!validateRollNo(rollno)) {
+            return res.json({ success: false, message: "Invalid roll number format! Use: 20XXCSBXXX" })
+        }
         const emailExists = await userModel.findOne({ email })
         if (!emailExists) {
             return res.json({ success: false, message: "User doesn't exist! Please register." })
