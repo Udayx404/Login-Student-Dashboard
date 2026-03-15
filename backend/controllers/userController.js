@@ -101,11 +101,14 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body
+    const { email, password, rollno } = req.body
     try {
         const emailExists = await userModel.findOne({ email })
         if (!emailExists) {
             return res.json({ success: false, message: "User doesn't exist! Please register." })
+        }
+        if(emailExists.rollno !== rollno){
+            return res.json({ success: false, message: "Roll number doesn't match!" })
         }
         const isMatch = await bcrypt.compare(password, emailExists.password)
         if (!isMatch) {
